@@ -18,6 +18,7 @@ const typeDefs = gql`
     name: String!
     id: ID!
     born: String
+    bookCount: Int!
   }
 
   type Query {
@@ -27,18 +28,22 @@ const typeDefs = gql`
     allAuthors: [Author!]!
   }
 `
+// resolvers object contains objects holding resolvers for a type
 const resolvers = {
-  Query: {
-    bookCount: () => books.length,
+  Query: { // type
+    bookCount: () => books.length, // each field of the type requires a resolver function
     authorCount: () => authors.length,
     allBooks: () => books,
     allAuthors: () => authors
+  },
+  Author: {
+    bookCount: (root) => books.filter(b => b.author === root.name).length
   }
 }
 
 const server = new ApolloServer({
-  typeDefs,
-  resolvers,
+  typeDefs, // schema
+  resolvers, // resolvers object defined at line 33
 })
 
 server.listen().then(({ url }) => {
