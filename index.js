@@ -24,7 +24,7 @@ const typeDefs = gql`
   type Query {
     bookCount(author: String): Int!
     authorCount: Int!
-    allBooks(author: String): [Book!]!
+    allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
   }
 `
@@ -37,8 +37,14 @@ const resolvers = {
     allAuthors: () => authors,
     // 'root' parameter is necessary here even though it is not used. when there is only one parameter, it is treated as the first parameter (of the four params that are passed into the resolver). therefore if there is only an 'args' parameter, 'args' is actually root (ie it cannot be used to access the resolver's parameters). so don't follow linter suggestions blindly
     allBooks: (root, args) => { 
+        if (args.author && args.genre) {
+          return books.filter(book => (book.author === args.author) && book.genres.includes(args.genre))
+        }
         if (args.author) {
           return books.filter(book => book.author === args.author)
+        }
+        if (args.genre) {
+          return books.filter(book => book.genre.includes(args.genre))
         }
         return books
     }
