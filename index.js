@@ -2,7 +2,7 @@ const { ApolloServer, gql } = require('apollo-server')
 const { v1: uuid } = require('uuid');
 
 let books = require('./data/books.js').books;
-const authors = require('./data/authors.js').authors;
+let authors = require('./data/authors.js').authors;
 
 // Schema type descriptions 
 // schema descriptions are kinda like typescript interfaces 
@@ -69,6 +69,13 @@ const resolvers = {
         id: uuid()
       }
       books = books.concat(newBook);
+      if (!authors.find(a => a.name === args.author)) {
+        const newAuthor = {
+          name: args.author,
+          id: uuid()
+        }
+        authors = authors.concat(newAuthor)
+      }
       return newBook;
     }
   }
