@@ -22,19 +22,26 @@ const typeDefs = gql`
   }
 
   type Query {
-    bookCount: Int!
+    bookCount(author: String): Int!
     authorCount: Int!
-    allBooks: [Book!]!
+    allBooks(author: String): [Book!]!
     allAuthors: [Author!]!
   }
 `
 // resolvers object contains objects holding resolvers for a type
+// resolver functions have 4 parameters: 1. root (also called 'parent'), 2. args, 3. context, 4. info 
 const resolvers = {
   Query: { // type
     bookCount: () => books.length, // each field of the type requires a resolver function
     authorCount: () => authors.length,
-    allBooks: () => books,
-    allAuthors: () => authors
+    allAuthors: () => authors,
+    // 'root' parameter is necessary here even though it is not used. when there is only one parameter, it is treated as the first parameter (of the four params that are passed into the resolver). therefore if there is only an 'args' parameter, 'args' is actually root (ie it cannot be used to access the resolver's parameters). so don't follow linter suggestions blindly
+    allBooks: (root, args) => { 
+        if (args.author) {
+          return books.filter(book => book.author === args.author)
+        }
+        return books
+    }
   },
   Author: {
     bookCount: (root) => books.filter(b => b.author === root.name).length
