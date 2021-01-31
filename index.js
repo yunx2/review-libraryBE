@@ -1,6 +1,7 @@
 const { ApolloServer, gql } = require('apollo-server')
+const { v1: uuid } = require('uuid');
 
-const books = require('./data/books.js').books;
+let books = require('./data/books.js').books;
 const authors = require('./data/authors.js').authors;
 
 // Schema type descriptions 
@@ -19,6 +20,15 @@ const typeDefs = gql`
     id: ID!
     born: String
     bookCount: Int!
+  }
+
+  type Mutation {
+    addBook(
+      title: String!
+      published: String!
+      author: String!
+      genres: [String]
+    ): Book
   }
 
   type Query {
@@ -51,6 +61,16 @@ const resolvers = {
   },
   Author: {
     bookCount: (root) => books.filter(b => b.author === root.name).length
+  },
+  Mutation: {
+    addBook: (root, args) => {
+      const newBook = {
+        ...args,
+        id: uuid()
+      }
+      books = books.concat(newBook);
+      return newBook;
+    }
   }
 }
 
