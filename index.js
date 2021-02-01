@@ -1,12 +1,13 @@
 const { ApolloServer, gql } = require('apollo-server')
 const { v1: uuid } = require('uuid');
 
-let books = require('./data/books.js').books;
-let authors = require('./data/authors.js').authors;
+let { books } = require('./data/books.js');
+let { authors } = require('./data/authors.js');
 
 // Schema type descriptions 
 // schema descriptions are kinda like typescript interfaces 
 // ! after value type means the value must be non-null 
+
 const typeDefs = gql`
   type Book {
     title: String!
@@ -29,6 +30,10 @@ const typeDefs = gql`
       author: String!
       genres: [String]
     ): Book
+    editAuthor(
+      author: String!
+      birthYear: String!
+    ): Author
   }
 
   type Query {
@@ -38,6 +43,7 @@ const typeDefs = gql`
     allAuthors: [Author!]!
   }
 `
+
 // resolvers object contains objects holding resolvers for a type
 // resolver functions have 4 parameters: 1. root (also called 'parent'), 2. args, 3. context, 4. info 
 const resolvers = {
@@ -66,7 +72,7 @@ const resolvers = {
     addBook: (root, args) => {
       const newBook = {
         ...args,
-        id: uuid()
+        id: uuid(),
       }
       books = books.concat(newBook);
       if (!authors.find(a => a.name === args.author)) {
@@ -77,6 +83,19 @@ const resolvers = {
         authors = authors.concat(newAuthor)
       }
       return newBook;
+    },
+    editAuthor: (root, args) => {
+      const author = authors.find(author => author.name === args.author);
+    
+      if (author) {
+        const updated = {
+          ...author,
+          born: args.birthYear
+        }
+        authors = authors.map(a => a.name === args.author ? updated : a)
+        return updated
+      }
+      return null;   
     }
   }
 }
