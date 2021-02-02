@@ -1,15 +1,14 @@
 const { ApolloServer, gql } = require('apollo-server')
 const { v1: uuid } = require('uuid');
 const mongoose = require('mongoose');
-
+const { mongoUri } = require('./constants');
 const Books = require('./models/Book');
 
 const Author = require('./models/Author');
-const MONGODB_URI = "mongodb+srv://yunyun:mongo@test.jsak1.mongodb.net/library?retryWrites=true&w=majority";
 
-console.log('connecting to', MONGODB_URI)
+console.log('connecting to', mongoUri);
 
-mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
+mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
   .then(() => {
     console.log('connected to MongoDB')
   })
