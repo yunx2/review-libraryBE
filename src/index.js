@@ -1,8 +1,21 @@
 const { ApolloServer, gql } = require('apollo-server')
 const { v1: uuid } = require('uuid');
+const mongoose = require('mongoose');
 
-let { books } = require('./data/books.js');
-let { authors } = require('./data/authors.js');
+const Books = require('./models/Book');
+
+const Author = require('./models/Author');
+const MONGODB_URI = "mongodb+srv://yunyun:mongo@test.jsak1.mongodb.net/library?retryWrites=true&w=majority";
+
+console.log('connecting to', MONGODB_URI)
+
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
+  .then(() => {
+    console.log('connected to MongoDB')
+  })
+  .catch((error) => {
+    console.log('error connection to MongoDB:', error.message)
+  })
 
 // Schema type descriptions 
 // schema descriptions are kinda like typescript interfaces 
@@ -12,7 +25,7 @@ const typeDefs = gql`
   type Book {
     title: String!
     published: String!
-    author: String!
+    author: Author!
     id: ID!
     genres: [String]
   }
