@@ -2,7 +2,7 @@ const { ApolloServer, gql } = require('apollo-server')
 const { v1: uuid } = require('uuid');
 const mongoose = require('mongoose');
 const { mongoUri } = require('./constants');
-const Books = require('./models/Book');
+const Book = require('./models/Book');
 
 const Author = require('./models/Author');
 
@@ -60,22 +60,11 @@ const typeDefs = gql`
 // resolver functions have 4 parameters: 1. root (also called 'parent'), 2. args, 3. context, 4. info 
 const resolvers = {
   Query: { // type
-    bookCount: () => books.length, // each field of the type requires a resolver function
-    authorCount: () => authors.length,
-    allAuthors: () => authors,
+    bookCount: () => Book.collection.countDocuments(), // each field of the type requires a resolver function
+    authorCount: () => Author.collection.countDocuments(),
+    allAuthors: () => Author.find({}),
     // 'root' parameter is necessary here even though it is not used. when there is only one parameter, it is treated as the first parameter (of the four params that are passed into the resolver). therefore if there is only an 'args' parameter, 'args' is actually root (ie it cannot be used to access the resolver's parameters). so don't follow linter suggestions blindly
-    allBooks: (root, args) => { 
-        if (args.author && args.genre) {
-          return books.filter(book => (book.author === args.author) && book.genres.includes(args.genre))
-        }
-        if (args.author) {
-          return books.filter(book => book.author === args.author)
-        }
-        if (args.genre) {
-          return books.filter(book => book.genre.includes(args.genre))
-        }
-        return books
-    }
+    allBooks: (root, args) => Book.find({})
   },
   Author: {
     bookCount: (root) => books.filter(b => b.author === root.name).length
