@@ -85,18 +85,10 @@ const resolvers = {
       }
       return newBook;
     },
-    editAuthor: (root, args) => {
-      const author = authors.find(author => author.name === args.author);
-    
-      if (author) {
-        const updated = {
-          ...author,
-          born: args.birthYear
-        }
-        authors = authors.map(a => a.name === args.author ? updated : a)
-        return updated
-      }
-      return null;   
+    editAuthor: async (root, args) => {
+      const author = await Author.findOne({ name: args.author});
+      author.born = args.birthYear;
+      return author.save();
     }
   }
 }
