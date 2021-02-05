@@ -64,7 +64,10 @@ const resolvers = {
     authorCount: () => Author.collection.countDocuments(),
     allAuthors: () => Author.find({}),
     // 'root' parameter is necessary here even though it is not used. when there is only one parameter, it is treated as the first parameter (of the four params that are passed into the resolver). therefore if there is only an 'args' parameter, 'args' is actually root (ie it cannot be used to access the resolver's parameters). so don't follow linter suggestions blindly
-    allBooks: (root, args) => Book.find({})
+    allBooks: async (root, args) => {
+     const results = await Book.find({}).populate('author');
+     return results;
+    }
   },
   Author: {
     bookCount: (root) => books.filter(b => b.author === root.name).length
