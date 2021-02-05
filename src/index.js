@@ -1,9 +1,9 @@
 const { ApolloServer, gql } = require('apollo-server')
 const { v1: uuid } = require('uuid');
 const mongoose = require('mongoose');
+
 const { mongoUri } = require('./constants');
 const Book = require('./models/Book');
-
 const Author = require('./models/Author');
 
 console.log('connecting to', mongoUri);
@@ -23,15 +23,15 @@ mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true, us
 const typeDefs = gql`
   type Book {
     title: String!
-    published: String!
-    author: Author!
+    published: Int!
+    author: Author
     id: ID!
     genres: [String]
   }
   type Author {
     name: String!
     id: ID!
-    born: String
+    born: Int
     bookCount: Int!
   }
 
@@ -44,7 +44,7 @@ const typeDefs = gql`
     ): Book
     editAuthor(
       author: String!
-      birthYear: String!
+      birthYear: Int!
     ): Author
   }
 
