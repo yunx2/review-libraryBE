@@ -82,15 +82,15 @@ const resolvers = {
           });
           return await newBook.save(); 
         }
-        // const newAuthor = new Author({ // if author isn't already in db, first create new author
-        //   name: args.author
-        // });
-        // const addedAuthor = await newAuthor.save();
-        // const newBook = new Book({
-        //   ...args,
-        //   author: addedAuthor._id
-        // });
-        // return await addedAuthor.save();
+        const newAuthor = new Author({ // if author isn't already in db, first create new author
+          name: args.author
+        });
+        const addedAuthor = await newAuthor.save();
+        const newBook = new Book({
+          ...args,
+          author: addedAuthor._id
+        });
+        return await newBook.save();
     },
     editAuthor: async (root, args) => { 
       const author = await Author.findOne({ name: args.author});
